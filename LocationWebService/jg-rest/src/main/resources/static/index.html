@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<title>Location Web Service Client</title>
+
+</head>
+
+<body>
+
+	<h1>Location Web Service Client</h1>
+
+	<label for="location">Enter your city:</label>
+	<input type="text" id="meineLocation" name="location">
+	<br></br>
+	<div id="result"></div>
+	<div id="link"></div>
+	<div id="Alti"></div>
+	<button onclick="getLocation()">Get Location</button>
+	<br></br>
+	
+	<hr></hr>
+
+	<label for="locationLat">Latitude:</label>
+	<input type="number" id="locationLat" name="Lat" >
+	<label for="locationLong">Longitude:</label>
+	<input type="number" id="locationLong" name="Long" >
+	
+	<br></br>
+	<div id="result2"></div>
+	<div id="link2"></div>
+	<div id="Alti2"></div>
+	<button onclick="getNearestLocation()">Get Location</button>
+	<script>
+
+      function getLocation() {
+
+        const locationInput = document.querySelector('#meineLocation');
+
+        const location = locationInput.value;
+
+        const url = "http://localhost:8080/location?name=" + location;
+        
+ 
+        fetch(url).then(response => response.json()).then(data => {
+
+            const resultDiv = document.querySelector('#result');
+			const linkDiv = document.querySelector('#link');
+            
+            resultDiv.textContent = "Name: " + data.name + "| Lat: " + data.latitude + "| Long: " + data.longitude;
+            
+            var linkUrl = "https://www.google.com/maps/place/" + data.latitude + "N+" + data.longitude + "E";
+            var linkText = "zu Google Maps";
+            linkDiv.innerHTML = '<a href="'+ linkUrl +'" target="_blank">' + linkText + '</a>';
+			
+          });
+        
+        const url2 = "http://localhost:8080/altitudeLocation?name=" + location;  
+        fetch(url2).then(response => response.json()).then(data => {
+      	  const AltiDiv = document.querySelector('#Alti');
+      	  AltiDiv.textContent = "Altitude: " + data;
+        });
+        }
+
+      function getNearestLocation() {
+
+          const LatInput = document.querySelector('#locationLat').value;
+          const LongInput = document.querySelector('#locationLong').value;
+          const locName = null;
+
+          //const location = locationInput.value;
+
+         const url = "http://localhost:8080/nearestLocation?Lat=" + encodeURIComponent(LatInput) + "&Long=" + encodeURIComponent(LongInput);    
+   
+          fetch(url).then(response => response.json()).then(data => {
+
+              const resultDiv = document.querySelector('#result2');
+  			const linkDiv = document.querySelector('#link2');
+              
+              resultDiv.textContent = "Name: " + data.name + "| Lat: " + data.latitude + "| Long: " + data.longitude;
+              
+              var linkUrl = "https://www.google.com/maps/place/" + data.latitude + "N+" + data.longitude + "E";
+              var linkText = "zu Google Maps";
+              linkDiv.innerHTML = '<a href="'+ linkUrl +'" target="_blank">' + linkText + '</a>';
+              locName = data.name.value;
+            }); 
+         
+          const url2 = "http://localhost:8080/altitudeLocation?name=" + locName;  
+          fetch(url2).then(response => response.json()).then(data => {
+        	  const AltiDiv = document.querySelector('#Alti2');
+        	  AltiDiv.textContent = "Altitude: " + data;
+          });
+          }
+</script>
+
+</body>
